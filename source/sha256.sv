@@ -24,9 +24,6 @@ module sha256(
     DONE //1 cycle
   } State;
   
-  /*localparam SHA256_H = {
-   32'h6a09e667,32'hbb67ae85,32'h3c6ef372,32'ha54ff53a,32'h510e527f,32'h9b05688c,32'h1f83d9ab,32'h5be0cd19
-  };*/
   localparam[31:0] SHA256_K[0:63] = {
    32'h428a2f98, 32'h71374491, 32'hb5c0fbcf, 32'he9b5dba5, 32'h3956c25b, 32'h59f111f1, 32'h923f82a4, 32'hab1c5ed5,
    32'hd807aa98, 32'h12835b01, 32'h243185be, 32'h550c7dc3, 32'h72be5d74, 32'h80deb1fe, 32'h9bdc06a7, 32'hc19bf174,
@@ -75,6 +72,7 @@ module sha256(
       COMPRESS: if(round==15) begin next_sha_state=EXT_COMPRESS; end else begin next_sha_state=COMPRESS; end
       EXT_COMPRESS: if(round==63) begin next_sha_state=POST; end else begin next_sha_state=EXT_COMPRESS; end
       POST: next_sha_state=DONE;
+      DONE: if(enable) next_sha_state=INIT;
     endcase
   end
   
@@ -87,10 +85,8 @@ module sha256(
           next_w[i]=0;
         end
       INIT: begin
-        //$info("initializing");
         for(integer i=0; i<16; i=i+1) begin
           next_w[15-i]=data[i*32 +: 32];
-          //$info("next_w[%d] = %h",15-i,next_w[15-i]);
         end
         for(integer i=16; i<64; i=i+1) begin
           next_w[i]=0;
