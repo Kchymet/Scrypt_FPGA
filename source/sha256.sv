@@ -42,8 +42,6 @@ module sha256(
   
   reg[31:0] w[63:0];
   reg[31:0] next_w[63:0];
-  reg[31:0] h0,h1,h2,h3,h4,h5,h6,h7;
-  reg[31:0] next_h0,next_h1,next_h2,next_h3,next_h4,next_h5,next_h6,next_h7;
   reg[31:0] w2_i,w7_i,w15_i,w16_i,w_o; //extension block variables
   wire[31:0] k_i, w_i; //main block variables
   reg[31:0] a,b,c,d,e,f,g,h; //main block variables
