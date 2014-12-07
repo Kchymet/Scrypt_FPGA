@@ -29,7 +29,6 @@ State q, nextq;
 //internal register for the block
 reg[1023:0] next_hash_out;
 reg[1023:0] B, nextB;
-reg[511:0] X, nextX;
 
 //connection to salsa
 reg[511:0] salsa_data_in;
@@ -39,9 +38,8 @@ salsa20_8 SALSA (.clk(clk),.n_rst(n_rst),.data(salsa_data_in),.enable(salsa_enab
 
 //next state logic
 always_comb begin
-  nextq=IDLE;
+  nextq=q;
   nextB=B;
-  nextX=X;
   salsa_data_in=0; //default to make simulator happy
   salsa_enable=0;
   next_hash_out=hash_out;
@@ -52,22 +50,21 @@ always_comb begin
     end
     INIT: begin
       nextq=H_TOP;
-      nextX=B[511:0];
     end
     H_TOP: begin
-      salsa_data_in = B[1023:512] ^ X;
+      salsa_data_in=B[1023:512]^B[511:0];
       salsa_enable=1;
       if(salsa_done) begin
-        nextX=salsa_data_out;
+        nextB[1023:512]=salsa_data_out;
         next_hash_out[1023:512]=salsa_data_out;
         nextq=H_BOT;
       end
     end
     H_BOT: begin
-      salsa_data_in = B[511:0];
+      salsa_data_in=B[1023:512]^B[511:0];
       salsa_enable=1;
       if(salsa_done) begin
-        nextX=salsa_data_out;
+        nextB[511:0]=salsa_data_out;
         next_hash_out[511:0]=salsa_data_out;
         nextq=DONE;
       end
@@ -82,7 +79,6 @@ always_ff @(posedge clk, negedge n_rst) begin
     q<=IDLE;
   end
   else begin
-    X <= nextX;
     q <= nextq;
     B <= nextB;
     hash_out <= next_hash_out;

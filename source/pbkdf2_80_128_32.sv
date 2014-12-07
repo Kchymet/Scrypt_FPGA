@@ -16,6 +16,6 @@ module pbkdf2_80_128_32 (
   output reg hash_done
   );
   
-  hmac_sha256_212 HMAC0 (.data({pass,salt,32'b1}),.enable(enable),.hash(hash),.hash_done(hash_done));
+  hmac_sha256_212 HMAC0 (.clk(clk),.n_rst(n_rst),.data({pass,salt,32'b1}),.enable(enable),.hash(hash),.hash_done(hash_done));
   
 endmodule

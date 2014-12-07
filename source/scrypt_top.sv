@@ -32,9 +32,10 @@ module scrypt_top (
   wire pbfirst_done, main_done, pbsecond_done;
   
   pbkdf2_80_80_128 PBFIRST (.clk(clk),.n_rst(n_rst),.pass(data),.salt(data),.enable(enable),.hash(pbfirst_out),.hash_done(pbfirst_done));
-  scrypt_smix SCRYPT_MAIN (.clk(clk),.n_rst(n_rst),.data(pbfirst_out),.enable(pbfirst_done).hash(main_out),.hash_done(main_done));
+  scrypt_smix SCRYPT_MAIN (.clk(clk),.n_rst(n_rst),.data(pbfirst_out),.enable(pbfirst_done),.hash(main_out),.hash_done(main_done));
   pbkdf2_80_128_32 PBSECOND (.clk(clk),.n_rst(n_rst),.pass(data_copy),.salt(main_out),.enable(main_done),.hash(pbsecond_out),.hash_done(pbsecond_done));
-  
-  //TODO output logic
+
+  assign match_found = hash_done & (pbsecond_out < data_copy[63:32]); //todo treat data as little-endian?
+
   
 endmodule

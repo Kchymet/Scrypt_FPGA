@@ -1,11 +1,11 @@
 // $Id: $
-// File name:   hmac_sha256_212.sv
+// File name:   hmac_sha256_164.sv
 // Created:     12/2/2014
 // Author:      Kyle Chynoweth
 // Lab Section: 01
 // Version:     1.0  Initial Design Entry
-// Description: Block for the 212B version of HMAC
-
+// Description: Block for the 164B input version of HMAC
+ 
 module hmac_sha256_212 (
   input wire clk,
   input wire n_rst,
@@ -18,6 +18,6 @@ module hmac_sha256_212 (
   wire[255:0] hash1_out;
   wire key_done;
   hmac_sha256_keyhash KEYSHA (.clk(clk),.n_rst(n_rst),.data(data[1695:1056]),.enable(enable),.hash(hash1_out),.hash_done(key_done));
-  hmac_sha256_32_128 MAINSHA (.clk(clk),.n_rst(n_rst),.data(data[1055:0]),.enable(enable),.hash(hash),.hash_done(hash_done));
+  hmac_sha256_32_132 MAINSHA (.clk(clk),.n_rst(n_rst),.data(hash1_out),.msg(data[1055:0]),.enable(key_done),.hash(hash),.hash_done(hash_done));
   
 endmodule

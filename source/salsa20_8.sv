@@ -9,7 +9,7 @@
 module salsa20_8 (
   input wire clk,
   input wire n_rst,
-  input wire[511:0] data, //data[15]..data[0], little endian
+  input wire[511:0] data, //
   input wire enable,
   output reg[511:0] data_out,
   output reg hash_done
@@ -72,125 +72,128 @@ always_comb begin
   case(q)
     IDLE: if(enable) begin nextdata=data; data_store=data; end
     ROUND1: begin
-      addtmp1=data_out[31:0]+data_out[415:384];
-      addtmp2=data_out[191:160]+data_out[63:32];
-      addtmp3=data_out[351:320]+data_out[223:192];
-      addtmp4=data_out[511:480]+data_out[383:352];
+      //$info("%h",data_store[511:0]);
+      addtmp1=data_out[32*(15- 0) +: 32]+data_out[32*(15-12) +: 32];
+      addtmp2=data_out[32*(15- 5) +: 32]+data_out[32*(15- 1) +: 32];
+      addtmp3=data_out[32*(15-10) +: 32]+data_out[32*(15- 6) +: 32];
+      addtmp4=data_out[32*(15-15) +: 32]+data_out[32*(15-11) +: 32];
       rottmp1={addtmp1[24:0],addtmp1[31:25]};
       rottmp2={addtmp2[24:0],addtmp2[31:25]};
       rottmp3={addtmp3[24:0],addtmp3[31:25]};
       rottmp4={addtmp4[24:0],addtmp4[31:25]};
-      nextdata[159:128]=nextdata[159:128] ^ rottmp1;
-      nextdata[319:288]=nextdata[319:288] ^ rottmp2;
-      nextdata[479:448]=nextdata[479:448] ^ rottmp3;
-      nextdata[127:96]=nextdata[128:96] ^ rottmp4;
-      $info("next data: %h %h %h %h", nextdata[159:128],nextdata[319:288],nextdata[479:448],nextdata[127:96]);
+      //$info("addtmp1:%h, data[0]:%h, data[12]:%h, rottmp1:%h, data[4], xor:%h",addtmp1,data_out[32*(15- 0) +: 32],data_out[32*(15-12) +: 32],rottmp1,nextdata[32*(15- 4) +: 32],nextdata[32*(15- 4) +: 32] ^ rottmp1);
+      nextdata[32*(15- 4) +: 32]=nextdata[32*(15- 4) +: 32] ^ rottmp1;
+      nextdata[32*(15- 9) +: 32]=nextdata[32*(15- 9) +: 32] ^ rottmp2;
+      nextdata[32*(15-14) +: 32]=nextdata[32*(15-14) +: 32] ^ rottmp3;
+      nextdata[32*(15- 3) +: 32]=nextdata[32*(15- 3) +: 32] ^ rottmp4;
+      //$info("%h %h %h %h",nextdata[32*(15- 4) +: 32], nextdata[32*(15- 9) +: 32], nextdata[32*(15-14) +: 32], nextdata[32*(15- 3) +: 32]);
+      //$info("%h %h %h %h",nextdata[159:128],nextdata[319:288],nextdata[479:448],nextdata[127:96]);
     end
     ROUND2: begin
-      addtmp1=data_out[159:128]+data_out[31:0];
-      addtmp2=data_out[319:288]+data_out[191:160];
-      addtmp3=data_out[479:448]+data_out[351:320];
-      addtmp4=data_out[127:96]+data_out[511:480];
+      addtmp1=data_out[32*(15- 4) +: 32]+data_out[32*(15- 0) +: 32];
+      addtmp2=data_out[32*(15- 9) +: 32]+data_out[32*(15- 5) +: 32];
+      addtmp3=data_out[32*(15-14) +: 32]+data_out[32*(15-10) +: 32];
+      addtmp4=data_out[32*(15- 3) +: 32]+data_out[32*(15-15) +: 32];
       rottmp1={addtmp1[22:0],addtmp1[31:23]};
       rottmp2={addtmp2[22:0],addtmp2[31:23]};
       rottmp3={addtmp3[22:0],addtmp3[31:23]};
       rottmp4={addtmp4[22:0],addtmp4[31:23]};
-      nextdata[287:256]=data_out[287:256] ^ rottmp1;
-      nextdata[447:416]=data_out[447:416] ^ rottmp2;
-      nextdata[95:64]=data_out[95:64] ^ rottmp3;
-      nextdata[255:224]=data_out[255:224] ^ rottmp4;
-      $info("next data: %h %h %h %h", nextdata[287:256],nextdata[447:416],nextdata[95:64],nextdata[255:224]);
+      nextdata[32*(15- 8) +: 32]=nextdata[32*(15- 8) +: 32] ^ rottmp1;
+      nextdata[32*(15-13) +: 32]=nextdata[32*(15-13) +: 32] ^ rottmp2;
+      nextdata[32*(15- 2) +: 32]=nextdata[32*(15- 2) +: 32] ^ rottmp3;
+      nextdata[32*(15- 7) +: 32]=nextdata[32*(15- 7) +: 32] ^ rottmp4;
+      //$info("%h %h %h %h",nextdata[32*(15- 8) +: 32], nextdata[32*(15-13) +: 32], nextdata[32*(15- 2) +: 32], nextdata[32*(15- 7) +: 32]);
+      //$info("%h %h %h %h",nextdata[287:256],nextdata[447:416],nextdata[95:64],nextdata[255:224]);
     end
     ROUND3: begin
-      addtmp1=data_out[287:256]+data_out[159:128];
-      addtmp2=data_out[447:416]+data_out[319:288];
-      addtmp3=data_out[95:64]+data_out[479:448];
-      addtmp4=data_out[255:224]+data_out[127:96];
+      addtmp1=data_out[32*(15- 8) +: 32]+data_out[32*(15- 4) +: 32];
+      addtmp2=data_out[32*(15-13) +: 32]+data_out[32*(15- 9) +: 32];
+      addtmp3=data_out[32*(15- 2) +: 32]+data_out[32*(15-14) +: 32];
+      addtmp4=data_out[32*(15- 7) +: 32]+data_out[32*(15- 3) +: 32];
       rottmp1={addtmp1[18:0],addtmp1[31:19]};
       rottmp2={addtmp2[18:0],addtmp2[31:19]};
       rottmp3={addtmp3[18:0],addtmp3[31:19]};
       rottmp4={addtmp4[18:0],addtmp4[31:19]};
-      nextdata[415:384]=data_out[415:384] ^ rottmp1;
-      nextdata[63:32]=data_out[63:32] ^ rottmp2;
-      nextdata[223:192]=data_out[223:192] ^ rottmp3;
-      nextdata[383:352]=data_out[383:352] ^ rottmp4;
-      $info("next data: %h %h %h %h", nextdata[415:384],nextdata[63:32],nextdata[223:192],nextdata[383:352]);
+      nextdata[32*(15-12) +: 32]=nextdata[32*(15-12) +: 32] ^ rottmp1;
+      nextdata[32*(15- 1) +: 32]=nextdata[32*(15- 1) +: 32] ^ rottmp2;
+      nextdata[32*(15- 6) +: 32]=nextdata[32*(15- 6) +: 32] ^ rottmp3;
+      nextdata[32*(15-11) +: 32]=nextdata[32*(15-11) +: 32] ^ rottmp4;
+      //$info("%h %h %h %h",nextdata[415:384],nextdata[63:32],nextdata[223:192],nextdata[383:352]);
     end
     ROUND4: begin
-      addtmp1=data_out[415:384]+data_out[287:256];
-      addtmp2=data_out[63:32]+data_out[447:416];
-      addtmp3=data_out[223:192]+data_out[95:64];
-      addtmp4=data_out[383:352]+data_out[255:224];
+      addtmp1=data_out[32*(15-12) +: 32]+data_out[32*(15- 8) +: 32];
+      addtmp2=data_out[32*(15- 1) +: 32]+data_out[32*(15-13) +: 32];
+      addtmp3=data_out[32*(15- 6) +: 32]+data_out[32*(15- 2) +: 32];
+      addtmp4=data_out[32*(15-11) +: 32]+data_out[32*(15- 7) +: 32];
       rottmp1={addtmp1[13:0],addtmp1[31:14]};
       rottmp2={addtmp2[13:0],addtmp2[31:14]};
       rottmp3={addtmp3[13:0],addtmp3[31:14]};
       rottmp4={addtmp4[13:0],addtmp4[31:14]};
-      nextdata[31:0]=data_out[31:0] ^ rottmp1;
-      nextdata[191:160]=data_out[191:160] ^ rottmp2;
-      nextdata[351:320]=data_out[351:320] ^ rottmp3;
-      nextdata[511:480]=data_out[511:480] ^ rottmp4;
-      $info("next data: %h %h %h %h", nextdata[31:0],nextdata[191:160],nextdata[351:320],nextdata[511:480]);
+      nextdata[32*(15- 0) +: 32]=nextdata[32*(15- 0) +: 32] ^ rottmp1;
+      nextdata[32*(15- 5) +: 32]=nextdata[32*(15- 5) +: 32] ^ rottmp2;
+      nextdata[32*(15-10) +: 32]=nextdata[32*(15-10) +: 32] ^ rottmp3;
+      nextdata[32*(15-15) +: 32]=nextdata[32*(15-15) +: 32] ^ rottmp4;
+      //$info("%h %h %h %h",nextdata[31:0],nextdata[191:160],nextdata[351:320],nextdata[511:480]);
     end
     ROUND5: begin
-      addtmp1=data_out[31:0]+data_out[127:96];
-      addtmp2=data_out[191:160]+data_out[159:128];
-      addtmp3=data_out[351:320]+data_out[319:288];
-      addtmp4=data_out[511:480]+data_out[479:448];
+      addtmp1=data_out[32*(15- 0) +: 32]+data_out[32*(15- 3) +: 32];
+      addtmp2=data_out[32*(15- 5) +: 32]+data_out[32*(15- 4) +: 32];
+      addtmp3=data_out[32*(15-10) +: 32]+data_out[32*(15- 9) +: 32];
+      addtmp4=data_out[32*(15-15) +: 32]+data_out[32*(15-14) +: 32];
       rottmp1={addtmp1[24:0],addtmp1[31:25]};
       rottmp2={addtmp2[24:0],addtmp2[31:25]};
       rottmp3={addtmp3[24:0],addtmp3[31:25]};
       rottmp4={addtmp4[24:0],addtmp4[31:25]};
-      nextdata[63:32]=data_out[63:32] ^ rottmp1;
-      nextdata[223:192]=data_out[223:192] ^ rottmp2;
-      nextdata[383:352]=data_out[383:352] ^ rottmp3;
-      nextdata[415:384]=data_out[415:384] ^ rottmp4;
-      $info("next data: %h %h %h %h", nextdata[63:32],nextdata[223:192],nextdata[383:352],nextdata[415:384]);
+      nextdata[32*(15- 1) +: 32]=nextdata[32*(15- 1) +: 32] ^ rottmp1;
+      nextdata[32*(15- 6) +: 32]=nextdata[32*(15- 6) +: 32] ^ rottmp2;
+      nextdata[32*(15-11) +: 32]=nextdata[32*(15-11) +: 32] ^ rottmp3;
+      nextdata[32*(15-12) +: 32]=nextdata[32*(15-12) +: 32] ^ rottmp4;
+      //$info("%h %h %h %h",nextdata[63:32],nextdata[223:192],nextdata[383:352],nextdata[415:384]);
     end
     ROUND6: begin
-      addtmp1=data_out[63:32]+data_out[31:0];
-      addtmp2=data_out[223:192]+data_out[191:160];
-      addtmp3=data_out[383:352]+data_out[351:320];
-      addtmp4=data_out[415:384]+data_out[511:480];
+      addtmp1=data_out[32*(15- 1) +: 32]+data_out[32*(15- 0) +: 32];
+      addtmp2=data_out[32*(15- 6) +: 32]+data_out[32*(15- 5) +: 32];
+      addtmp3=data_out[32*(15-11) +: 32]+data_out[32*(15-10) +: 32];
+      addtmp4=data_out[32*(15-12) +: 32]+data_out[32*(15-15) +: 32];
       rottmp1={addtmp1[22:0],addtmp1[31:23]};
       rottmp2={addtmp2[22:0],addtmp2[31:23]};
       rottmp3={addtmp3[22:0],addtmp3[31:23]};
       rottmp4={addtmp4[22:0],addtmp4[31:23]};
-      nextdata[95:64]=data_out[95:64] ^ rottmp1;
-      nextdata[255:224]=data_out[255:224] ^ rottmp2;
-      nextdata[287:256]=data_out[287:256] ^ rottmp3;
-      nextdata[448:416]=data_out[448:416] ^ rottmp4;
-      $info("next data: %h %h %h %h", nextdata[95:64],nextdata[255:224],nextdata[287:256],nextdata[448:416]);
+      nextdata[32*(15- 2) +: 32]=nextdata[32*(15- 2) +: 32] ^ rottmp1;
+      nextdata[32*(15- 7) +: 32]=nextdata[32*(15- 7) +: 32] ^ rottmp2;
+      nextdata[32*(15- 8) +: 32]=nextdata[32*(15- 8) +: 32] ^ rottmp3;
+      nextdata[32*(15-13) +: 32]=nextdata[32*(15-13) +: 32] ^ rottmp4;
+      //$info("%h %h %h %h",nextdata[95:64],nextdata[255:224],nextdata[287:256],nextdata[448:416]);
     end
     ROUND7: begin
-      addtmp1=data_out[95:64]+data_out[63:32];
-      addtmp2=data_out[255:224]+data_out[223:192];
-      addtmp3=data_out[287:256]+data_out[383:352];
-      addtmp4=data_out[447:416]+data_out[415:384];
-      $info("%h = %h + %h",addtmp4,data_out[447:416],data_out[415:384]);
+      addtmp1=data_out[32*(15- 2) +: 32]+data_out[32*(15- 1) +: 32];
+      addtmp2=data_out[32*(15- 7) +: 32]+data_out[32*(15- 6) +: 32];
+      addtmp3=data_out[32*(15- 8) +: 32]+data_out[32*(15-11) +: 32];
+      addtmp4=data_out[32*(15-13) +: 32]+data_out[32*(15-12) +: 32];
       rottmp1={addtmp1[18:0],addtmp1[31:19]};
       rottmp2={addtmp2[18:0],addtmp2[31:19]};
       rottmp3={addtmp3[18:0],addtmp3[31:19]};
       rottmp4={addtmp4[18:0],addtmp4[31:19]};
-      nextdata[127:96]=data_out[127:96] ^ rottmp1;
-      nextdata[159:128]=data_out[159:128] ^ rottmp2;
-      nextdata[319:288]=data_out[319:288] ^ rottmp3;
-      nextdata[479:448]=data_out[479:448] ^ rottmp4;
-      $info("next data: %h %h %h %h", nextdata[127:96],nextdata[159:128],nextdata[319:288],nextdata[479:448]);
+      nextdata[32*(15- 3) +: 32]=nextdata[32*(15- 3) +: 32] ^ rottmp1;
+      nextdata[32*(15- 4) +: 32]=nextdata[32*(15- 4) +: 32] ^ rottmp2;
+      nextdata[32*(15- 9) +: 32]=nextdata[32*(15- 9) +: 32] ^ rottmp3;
+      nextdata[32*(15-14) +: 32]=nextdata[32*(15-14) +: 32] ^ rottmp4;
+      //$info("%h %h %h %h",nextdata[127:96],nextdata[159:128],nextdata[319:288],nextdata[479:448]);
     end
     ROUND8: begin
-      addtmp1=data_out[127:96]+data_out[95:64];
-      addtmp2=data_out[159:128]+data_out[255:224];
-      addtmp3=data_out[319:288]+data_out[287:256];
-      addtmp4=data_out[479:448]+data_out[447:416];
+      addtmp1=data_out[32*(15- 3) +: 32]+data_out[32*(15- 2) +: 32];
+      addtmp2=data_out[32*(15- 4) +: 32]+data_out[32*(15- 7) +: 32];
+      addtmp3=data_out[32*(15- 9) +: 32]+data_out[32*(15- 8) +: 32];
+      addtmp4=data_out[32*(15-14) +: 32]+data_out[32*(15-13) +: 32];
       rottmp1={addtmp1[13:0],addtmp1[31:14]};
       rottmp2={addtmp2[13:0],addtmp2[31:14]};
       rottmp3={addtmp3[13:0],addtmp3[31:14]};
       rottmp4={addtmp4[13:0],addtmp4[31:14]};
-      nextdata[31:0]=data_out[31:0] ^ rottmp1;
-      nextdata[191:160]=data_out[191:160] ^ rottmp2;
-      nextdata[351:320]=data_out[351:320] ^ rottmp3;
-      nextdata[511:480]=data_out[511:480] ^ rottmp4;
-      $info("next data: %h %h %h %h", nextdata[31:0],nextdata[191:160],nextdata[351:320],nextdata[511:480]);
+      nextdata[32*(15- 0) +: 32]=nextdata[32*(15- 0) +: 32] ^ rottmp1;
+      nextdata[32*(15- 5) +: 32]=nextdata[32*(15- 5) +: 32] ^ rottmp2;
+      nextdata[32*(15-10) +: 32]=nextdata[32*(15-10) +: 32] ^ rottmp3;
+      nextdata[32*(15-15) +: 32]=nextdata[32*(15-15) +: 32] ^ rottmp4;
+      //$info("%h %h %h %h",nextdata[31:0],nextdata[191:160],nextdata[351:320],nextdata[511:480]);
     end
     DONE1: begin
       for(integer i=0;i<16;i=i+1) begin
