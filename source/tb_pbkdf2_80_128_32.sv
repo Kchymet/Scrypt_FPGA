@@ -30,10 +30,10 @@ module tb_pbkdf2_80_128_32 ();
 	initial begin
 	  enable_in=0;
 	  for(integer i=0;i<80;i=i+1) begin
-	    pass[8*i +: 8] = 8'h01;
+	    pass[8*(79-i) +: 8] = i;
 	  end
 	  for(integer i=0; i<132;i=i+1) begin
-	    salt[(8*i) +: 8] = 8'h01;
+	    salt[(8*(127-i)) +: 8] = i;
     end
 	  n_rst_in=0;
 	  #(CLK_PERIOD*1.5);

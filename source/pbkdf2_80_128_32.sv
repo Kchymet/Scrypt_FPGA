@@ -12,7 +12,7 @@ module pbkdf2_80_128_32 (
   input wire[639:0] pass,
   input wire[1023:0] salt,
   input wire enable,
-  output reg[1023:0] hash,
+  output reg[255:0] hash,
   output reg hash_done
   );
   

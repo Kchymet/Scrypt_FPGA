@@ -12,12 +12,20 @@ module scrypt_smix (
   input wire[1023:0] data,
   input wire enable,
   output reg[1023:0] hash,
-  output reg hash_done
+  output reg hash_done,
+  
+  //SRAM connections, not in real design, but can't fabricate SRAM
+  output reg scratch_read,
+  output reg scratch_write,
+  output reg[16:0] scratch_addr,
+  output reg[1023:0] scratch_in,
+  input reg[1023:0] scratch_out
   );
   
-  typedef enum bit[1:0]{
+  typedef enum bit[2:0]{
     IDLE,
     FIRST,
+    SWITCH,
     SECOND,
     DONE
   } State;
@@ -32,14 +40,10 @@ module scrypt_smix (
   reg bmix_enable, bmix_done;
   scrypt_blockmix BMIX (.clk(clk),.n_rst(n_rst),.data(bmix_data),.enable(bmix_enable),.hash_out(bmix_out),.hash_done(bmix_done));
   
-  //scratchpad connections
-  reg scratch_read, scratch_write;
-  reg[16:0] scratch_addr;
-  reg[1023:0] scratch_in, scratch_out;
-  scratchpad MEM (.r_enable(scratch_read),.w_enable(scratch_write),.addr(scratch_addr),.r_data(scratch_out),.w_data(scratch_in));
-  
   //connection and next-state logic
   always_comb begin
+    hash_done=0;
+    hash=X;
     nextX=X;
     nextq=q;
     nextcount=count;
@@ -55,18 +59,24 @@ module scrypt_smix (
         scratch_in=X;
         scratch_write=1;
         if(bmix_done) begin nextcount=count+1; bmix_enable=0; nextX=bmix_out; scratch_write=0; end
-        if(count==1024) begin nextq=SECOND; nextcount=0; end
+        if(nextcount==1024) begin nextq=SWITCH; nextcount=0; end
+      end
+      SWITCH: begin
+        bmix_enable=0;
+        scratch_addr=(X[(31-16)*32 +:32] & 10'd1023)*128; //integrify treats X as a little-endian integer modulus 1024, then x128 for word position
+        scratch_read=1;
+        bmix_data = X ^ scratch_out;
+        nextq=SECOND;
       end
       SECOND: begin
         scratch_addr=(X[(31-16)*32 +:32] & 10'd1023)*128; //integrify treats X as a little-endian integer modulus 1024, then x128 for word position
-        $info("X[16]=%h, and: %h, mul: %h",X[(31-16)*32 +:32],X[(31-16)*32 +:32]&1023,(X[(31-16)*32 +:32]&1023)*128);
-        $info("X = %h",X);
         scratch_read=1;
         bmix_data = X ^ scratch_out;
         if(bmix_done) begin nextcount=count+1; bmix_enable=0; nextX=bmix_out; end
-        if(count==1023) begin nextq=DONE; nextcount=0; end
+        if(nextcount==1024) begin nextq=DONE; nextcount=0; end
       end
       DONE: begin
+        hash_done=1;
         bmix_enable=0;
         nextcount=0;
         nextq=IDLE;

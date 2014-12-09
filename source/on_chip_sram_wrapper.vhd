@@ -1,12 +1,3 @@
--- $Id: $
--- File name:   on_chip_sram_wrapper.vhd
--- Created:     4/16/2013
--- Author:      foo
--- Lab Section: 99
--- Version:     1.0  Initial Design Entry
--- Description: Verilog-safe vhdl wrapper for parameterized course on-chip sram model.
--- Note: use a tab size of 2 spaces for best readablity
-
 library ieee;
 use ieee.std_logic_1164.all;
 use ieee.numeric_std.all;

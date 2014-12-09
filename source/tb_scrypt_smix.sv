@@ -14,8 +14,24 @@ module tb_scrypt_smix ();
   reg tb_clk, enable_in, n_rst_in;
   reg[1023:0] data_in, data_out;
   reg hash_done;
-  
-  scrypt_smix DUT(.clk(tb_clk),.n_rst(n_rst_in),.enable(enable_in),.data(data_in),.hash(data_out),.hash_done(hash_done));
+
+  reg r_enable, w_enable;
+  reg[16:0] sram_addr;
+  reg[1023:0] r_data, w_data;  
+  on_chip_sram_wrapper #(.W_ADDR_SIZE_BITS(17),.W_WORD_SIZE_BYTES(1),.W_DATA_SIZE_WORDS(128)) SRAM (
+    .read_enable(r_enable),
+    .write_enable(w_enable),
+    .address(sram_addr),
+    .read_data(r_data),
+    .write_data(w_data)
+  );
+  scrypt_smix DUT(.clk(tb_clk),.n_rst(n_rst_in),.enable(enable_in),.data(data_in),.hash(data_out),.hash_done(hash_done),
+    //SRAM connections
+    .scratch_read(r_enable),
+    .scratch_write(w_enable),
+    .scratch_addr(sram_addr),
+    .scratch_in(w_data),
+    .scratch_out(r_data));
   
   // Clock generation block
 	always	begin

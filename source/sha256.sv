@@ -24,7 +24,7 @@ module sha256(
     DONE //1 cycle
   } State;
   
-  localparam[31:0] SHA256_K[0:63] = {
+  wire[2047:0] SHA256_K = {
    32'h428a2f98, 32'h71374491, 32'hb5c0fbcf, 32'he9b5dba5, 32'h3956c25b, 32'h59f111f1, 32'h923f82a4, 32'hab1c5ed5,
    32'hd807aa98, 32'h12835b01, 32'h243185be, 32'h550c7dc3, 32'h72be5d74, 32'h80deb1fe, 32'h9bdc06a7, 32'hc19bf174,
    32'he49b69c1, 32'hefbe4786, 32'h0fc19dc6, 32'h240ca1cc, 32'h2de92c6f, 32'h4a7484aa, 32'h5cb0a9dc, 32'h76f988da,
@@ -41,8 +41,9 @@ module sha256(
   reg [6:0] next_round;
   
   reg[31:0] w[63:0];
+  reg[31:0] w_t, next_w_t;
   reg[31:0] next_w[63:0];
-  reg[31:0] w2_i,w7_i,w15_i,w16_i,w_o; //extension block variables
+  reg[31:0] w2_i,w7_i,w15_i,w16_i; //extension block variables
   wire[31:0] k_i, w_i; //main block variables
   reg[31:0] a,b,c,d,e,f,g,h; //main block variables
   reg[31:0] a_o,b_o,c_o,d_o,e_o,f_o,g_o,h_o; //main block variables
@@ -50,11 +51,11 @@ module sha256(
   
   reg [255:0] next_hash;
   
-  assign k_i = SHA256_K[round];
-  assign w_i = next_w[round];
+  assign k_i = SHA256_K[(63-round)*32 +: 32];
+  assign w_i = w[round];
   
   //partial next state logic for w
-  sha256_extension EXT(.w2(w2_i),.w7(w7_i),.w15(w15_i),.w16(w16_i),.w(w_o));
+  sha256_extension EXT(.w2(w2_i),.w7(w7_i),.w15(w15_i),.w16(w16_i),.w(next_w_t));
   //next state logic for internal a-h
   sha256_main MAIN(.a(a),.b(b),.c(c),.d(d),.e(e),.f(f),.g(g),.h(h),
                    .a_o(a_o),.b_o(b_o),.c_o(c_o),.d_o(d_o),.e_o(e_o),.f_o(f_o),.g_o(g_o),.h_o(h_o),
@@ -67,7 +68,7 @@ module sha256(
     case(sha_state)
       IDLE: if(enable) begin next_sha_state=INIT; end
       INIT: next_sha_state=COMPRESS;
-      COMPRESS: if(round==15) begin next_sha_state=EXT_COMPRESS; end else begin next_sha_state=COMPRESS; end
+      COMPRESS: if(round==14) begin next_sha_state=EXT_COMPRESS; end else begin next_sha_state=COMPRESS; end
       EXT_COMPRESS: if(round==63) begin next_sha_state=POST; end else begin next_sha_state=EXT_COMPRESS; end
       POST: next_sha_state=DONE;
       DONE: if(enable) next_sha_state=INIT;
@@ -90,7 +91,7 @@ module sha256(
           next_w[i]=0;
         end
       end
-      EXT_COMPRESS: begin next_w[round]=w_o; end
+      EXT_COMPRESS: begin next_w[round+1]=next_w_t; end
     endcase
   end
   
@@ -151,10 +152,10 @@ module sha256(
   
   //extension block inputs
   always_comb begin
-    w15_i = w[round-15];
-    w2_i = w[round-2];
-    w7_i = w[round-7];
-    w16_i = w[round-16];
+    w15_i = w[round-15+1];
+    w2_i = w[round-2+1];
+    w7_i = w[round-7+1];
+    w16_i = w[round-16+1];
   end
   
   //flip-flops
@@ -167,6 +168,7 @@ module sha256(
       
       sha_state<=next_sha_state;
       w<=next_w;
+      w_t<=next_w_t;
       hash<=next_hash;
       a<=next_a; b<=next_b; c<=next_c; d<=next_d; e<=next_e; f<=next_f; g<=next_g; h<=next_h;
       round<=next_round;

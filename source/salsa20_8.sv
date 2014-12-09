@@ -32,7 +32,7 @@ typedef enum bit[3:0]{
 //internal variables
 State q, nextq;
 shortint round, nextround;
-reg[511:0] nextdata, data_store;
+reg[511:0] nextdata, data_store, next_data_store;
 reg[31:0] addtmp1,addtmp2,addtmp3,addtmp4;
 reg[31:0] rottmp1,rottmp2,rottmp3,rottmp4;
 
@@ -65,12 +65,12 @@ end
 
 //nextdata logic
 always_comb begin
-  data_store=data_store;
+  next_data_store=data_store;
   addtmp1=0; addtmp2=0; addtmp3=0; addtmp4=0;
   rottmp1=0; rottmp2=0; rottmp3=0; rottmp4=0;
   nextdata=data_out;
   case(q)
-    IDLE: if(enable) begin nextdata=data; data_store=data; end
+    IDLE: if(enable) begin nextdata=data; next_data_store=data; end
     ROUND1: begin
       //$info("%h",data_store[511:0]);
       addtmp1=data_out[32*(15- 0) +: 32]+data_out[32*(15-12) +: 32];
@@ -81,13 +81,10 @@ always_comb begin
       rottmp2={addtmp2[24:0],addtmp2[31:25]};
       rottmp3={addtmp3[24:0],addtmp3[31:25]};
       rottmp4={addtmp4[24:0],addtmp4[31:25]};
-      //$info("addtmp1:%h, data[0]:%h, data[12]:%h, rottmp1:%h, data[4], xor:%h",addtmp1,data_out[32*(15- 0) +: 32],data_out[32*(15-12) +: 32],rottmp1,nextdata[32*(15- 4) +: 32],nextdata[32*(15- 4) +: 32] ^ rottmp1);
-      nextdata[32*(15- 4) +: 32]=nextdata[32*(15- 4) +: 32] ^ rottmp1;
-      nextdata[32*(15- 9) +: 32]=nextdata[32*(15- 9) +: 32] ^ rottmp2;
-      nextdata[32*(15-14) +: 32]=nextdata[32*(15-14) +: 32] ^ rottmp3;
-      nextdata[32*(15- 3) +: 32]=nextdata[32*(15- 3) +: 32] ^ rottmp4;
-      //$info("%h %h %h %h",nextdata[32*(15- 4) +: 32], nextdata[32*(15- 9) +: 32], nextdata[32*(15-14) +: 32], nextdata[32*(15- 3) +: 32]);
-      //$info("%h %h %h %h",nextdata[159:128],nextdata[319:288],nextdata[479:448],nextdata[127:96]);
+      nextdata[32*(15- 4) +: 32]=data_out[32*(15- 4) +: 32] ^ rottmp1;
+      nextdata[32*(15- 9) +: 32]=data_out[32*(15- 9) +: 32] ^ rottmp2;
+      nextdata[32*(15-14) +: 32]=data_out[32*(15-14) +: 32] ^ rottmp3;
+      nextdata[32*(15- 3) +: 32]=data_out[32*(15- 3) +: 32] ^ rottmp4;
     end
     ROUND2: begin
       addtmp1=data_out[32*(15- 4) +: 32]+data_out[32*(15- 0) +: 32];
@@ -98,10 +95,10 @@ always_comb begin
       rottmp2={addtmp2[22:0],addtmp2[31:23]};
       rottmp3={addtmp3[22:0],addtmp3[31:23]};
       rottmp4={addtmp4[22:0],addtmp4[31:23]};
-      nextdata[32*(15- 8) +: 32]=nextdata[32*(15- 8) +: 32] ^ rottmp1;
-      nextdata[32*(15-13) +: 32]=nextdata[32*(15-13) +: 32] ^ rottmp2;
-      nextdata[32*(15- 2) +: 32]=nextdata[32*(15- 2) +: 32] ^ rottmp3;
-      nextdata[32*(15- 7) +: 32]=nextdata[32*(15- 7) +: 32] ^ rottmp4;
+      nextdata[32*(15- 8) +: 32]=data_out[32*(15- 8) +: 32] ^ rottmp1;
+      nextdata[32*(15-13) +: 32]=data_out[32*(15-13) +: 32] ^ rottmp2;
+      nextdata[32*(15- 2) +: 32]=data_out[32*(15- 2) +: 32] ^ rottmp3;
+      nextdata[32*(15- 7) +: 32]=data_out[32*(15- 7) +: 32] ^ rottmp4;
       //$info("%h %h %h %h",nextdata[32*(15- 8) +: 32], nextdata[32*(15-13) +: 32], nextdata[32*(15- 2) +: 32], nextdata[32*(15- 7) +: 32]);
       //$info("%h %h %h %h",nextdata[287:256],nextdata[447:416],nextdata[95:64],nextdata[255:224]);
     end
@@ -114,10 +111,10 @@ always_comb begin
       rottmp2={addtmp2[18:0],addtmp2[31:19]};
       rottmp3={addtmp3[18:0],addtmp3[31:19]};
       rottmp4={addtmp4[18:0],addtmp4[31:19]};
-      nextdata[32*(15-12) +: 32]=nextdata[32*(15-12) +: 32] ^ rottmp1;
-      nextdata[32*(15- 1) +: 32]=nextdata[32*(15- 1) +: 32] ^ rottmp2;
-      nextdata[32*(15- 6) +: 32]=nextdata[32*(15- 6) +: 32] ^ rottmp3;
-      nextdata[32*(15-11) +: 32]=nextdata[32*(15-11) +: 32] ^ rottmp4;
+      nextdata[32*(15-12) +: 32]=data_out[32*(15-12) +: 32] ^ rottmp1;
+      nextdata[32*(15- 1) +: 32]=data_out[32*(15- 1) +: 32] ^ rottmp2;
+      nextdata[32*(15- 6) +: 32]=data_out[32*(15- 6) +: 32] ^ rottmp3;
+      nextdata[32*(15-11) +: 32]=data_out[32*(15-11) +: 32] ^ rottmp4;
       //$info("%h %h %h %h",nextdata[415:384],nextdata[63:32],nextdata[223:192],nextdata[383:352]);
     end
     ROUND4: begin
@@ -129,10 +126,10 @@ always_comb begin
       rottmp2={addtmp2[13:0],addtmp2[31:14]};
       rottmp3={addtmp3[13:0],addtmp3[31:14]};
       rottmp4={addtmp4[13:0],addtmp4[31:14]};
-      nextdata[32*(15- 0) +: 32]=nextdata[32*(15- 0) +: 32] ^ rottmp1;
-      nextdata[32*(15- 5) +: 32]=nextdata[32*(15- 5) +: 32] ^ rottmp2;
-      nextdata[32*(15-10) +: 32]=nextdata[32*(15-10) +: 32] ^ rottmp3;
-      nextdata[32*(15-15) +: 32]=nextdata[32*(15-15) +: 32] ^ rottmp4;
+      nextdata[32*(15- 0) +: 32]=data_out[32*(15- 0) +: 32] ^ rottmp1;
+      nextdata[32*(15- 5) +: 32]=data_out[32*(15- 5) +: 32] ^ rottmp2;
+      nextdata[32*(15-10) +: 32]=data_out[32*(15-10) +: 32] ^ rottmp3;
+      nextdata[32*(15-15) +: 32]=data_out[32*(15-15) +: 32] ^ rottmp4;
       //$info("%h %h %h %h",nextdata[31:0],nextdata[191:160],nextdata[351:320],nextdata[511:480]);
     end
     ROUND5: begin
@@ -144,10 +141,10 @@ always_comb begin
       rottmp2={addtmp2[24:0],addtmp2[31:25]};
       rottmp3={addtmp3[24:0],addtmp3[31:25]};
       rottmp4={addtmp4[24:0],addtmp4[31:25]};
-      nextdata[32*(15- 1) +: 32]=nextdata[32*(15- 1) +: 32] ^ rottmp1;
-      nextdata[32*(15- 6) +: 32]=nextdata[32*(15- 6) +: 32] ^ rottmp2;
-      nextdata[32*(15-11) +: 32]=nextdata[32*(15-11) +: 32] ^ rottmp3;
-      nextdata[32*(15-12) +: 32]=nextdata[32*(15-12) +: 32] ^ rottmp4;
+      nextdata[32*(15- 1) +: 32]=data_out[32*(15- 1) +: 32] ^ rottmp1;
+      nextdata[32*(15- 6) +: 32]=data_out[32*(15- 6) +: 32] ^ rottmp2;
+      nextdata[32*(15-11) +: 32]=data_out[32*(15-11) +: 32] ^ rottmp3;
+      nextdata[32*(15-12) +: 32]=data_out[32*(15-12) +: 32] ^ rottmp4;
       //$info("%h %h %h %h",nextdata[63:32],nextdata[223:192],nextdata[383:352],nextdata[415:384]);
     end
     ROUND6: begin
@@ -159,10 +156,10 @@ always_comb begin
       rottmp2={addtmp2[22:0],addtmp2[31:23]};
       rottmp3={addtmp3[22:0],addtmp3[31:23]};
       rottmp4={addtmp4[22:0],addtmp4[31:23]};
-      nextdata[32*(15- 2) +: 32]=nextdata[32*(15- 2) +: 32] ^ rottmp1;
-      nextdata[32*(15- 7) +: 32]=nextdata[32*(15- 7) +: 32] ^ rottmp2;
-      nextdata[32*(15- 8) +: 32]=nextdata[32*(15- 8) +: 32] ^ rottmp3;
-      nextdata[32*(15-13) +: 32]=nextdata[32*(15-13) +: 32] ^ rottmp4;
+      nextdata[32*(15- 2) +: 32]=data_out[32*(15- 2) +: 32] ^ rottmp1;
+      nextdata[32*(15- 7) +: 32]=data_out[32*(15- 7) +: 32] ^ rottmp2;
+      nextdata[32*(15- 8) +: 32]=data_out[32*(15- 8) +: 32] ^ rottmp3;
+      nextdata[32*(15-13) +: 32]=data_out[32*(15-13) +: 32] ^ rottmp4;
       //$info("%h %h %h %h",nextdata[95:64],nextdata[255:224],nextdata[287:256],nextdata[448:416]);
     end
     ROUND7: begin
@@ -174,10 +171,10 @@ always_comb begin
       rottmp2={addtmp2[18:0],addtmp2[31:19]};
       rottmp3={addtmp3[18:0],addtmp3[31:19]};
       rottmp4={addtmp4[18:0],addtmp4[31:19]};
-      nextdata[32*(15- 3) +: 32]=nextdata[32*(15- 3) +: 32] ^ rottmp1;
-      nextdata[32*(15- 4) +: 32]=nextdata[32*(15- 4) +: 32] ^ rottmp2;
-      nextdata[32*(15- 9) +: 32]=nextdata[32*(15- 9) +: 32] ^ rottmp3;
-      nextdata[32*(15-14) +: 32]=nextdata[32*(15-14) +: 32] ^ rottmp4;
+      nextdata[32*(15- 3) +: 32]=data_out[32*(15- 3) +: 32] ^ rottmp1;
+      nextdata[32*(15- 4) +: 32]=data_out[32*(15- 4) +: 32] ^ rottmp2;
+      nextdata[32*(15- 9) +: 32]=data_out[32*(15- 9) +: 32] ^ rottmp3;
+      nextdata[32*(15-14) +: 32]=data_out[32*(15-14) +: 32] ^ rottmp4;
       //$info("%h %h %h %h",nextdata[127:96],nextdata[159:128],nextdata[319:288],nextdata[479:448]);
     end
     ROUND8: begin
@@ -189,10 +186,10 @@ always_comb begin
       rottmp2={addtmp2[13:0],addtmp2[31:14]};
       rottmp3={addtmp3[13:0],addtmp3[31:14]};
       rottmp4={addtmp4[13:0],addtmp4[31:14]};
-      nextdata[32*(15- 0) +: 32]=nextdata[32*(15- 0) +: 32] ^ rottmp1;
-      nextdata[32*(15- 5) +: 32]=nextdata[32*(15- 5) +: 32] ^ rottmp2;
-      nextdata[32*(15-10) +: 32]=nextdata[32*(15-10) +: 32] ^ rottmp3;
-      nextdata[32*(15-15) +: 32]=nextdata[32*(15-15) +: 32] ^ rottmp4;
+      nextdata[32*(15- 0) +: 32]=data_out[32*(15- 0) +: 32] ^ rottmp1;
+      nextdata[32*(15- 5) +: 32]=data_out[32*(15- 5) +: 32] ^ rottmp2;
+      nextdata[32*(15-10) +: 32]=data_out[32*(15-10) +: 32] ^ rottmp3;
+      nextdata[32*(15-15) +: 32]=data_out[32*(15-15) +: 32] ^ rottmp4;
       //$info("%h %h %h %h",nextdata[31:0],nextdata[191:160],nextdata[351:320],nextdata[511:480]);
     end
     DONE1: begin
@@ -212,6 +209,7 @@ always_ff @(posedge clk, negedge n_rst) begin
     q<=nextq;
     round=nextround;
     data_out<=nextdata;
+    data_store<=next_data_store;
   end
 end
 

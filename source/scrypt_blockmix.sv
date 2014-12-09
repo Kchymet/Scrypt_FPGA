@@ -27,7 +27,7 @@ typedef enum bit[2:0]{
 State q, nextq;
 
 //internal register for the block
-reg[1023:0] next_hash_out;
+//reg[1023:0] next_hash_out;
 reg[1023:0] B, nextB;
 
 //connection to salsa
@@ -38,11 +38,12 @@ salsa20_8 SALSA (.clk(clk),.n_rst(n_rst),.data(salsa_data_in),.enable(salsa_enab
 
 //next state logic
 always_comb begin
+  hash_out=B;
   nextq=q;
   nextB=B;
   salsa_data_in=0; //default to make simulator happy
   salsa_enable=0;
-  next_hash_out=hash_out;
+  //next_hash_out=hash_out;
   case(q)
     IDLE: begin
       nextB=data;
@@ -56,7 +57,7 @@ always_comb begin
       salsa_enable=1;
       if(salsa_done) begin
         nextB[1023:512]=salsa_data_out;
-        next_hash_out[1023:512]=salsa_data_out;
+        //next_hash_out[1023:512]=salsa_data_out;
         nextq=H_BOT;
       end
     end
@@ -65,7 +66,7 @@ always_comb begin
       salsa_enable=1;
       if(salsa_done) begin
         nextB[511:0]=salsa_data_out;
-        next_hash_out[511:0]=salsa_data_out;
+        //next_hash_out[511:0]=salsa_data_out;
         nextq=DONE;
       end
     end
@@ -81,7 +82,7 @@ always_ff @(posedge clk, negedge n_rst) begin
   else begin
     q <= nextq;
     B <= nextB;
-    hash_out <= next_hash_out;
+    //hash_out <= next_hash_out;
   end
 end
 

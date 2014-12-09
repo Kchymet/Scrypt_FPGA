@@ -75,7 +75,9 @@ module tb_sha256();
 	  
  	  #(CLK_PERIOD*5); //wait a bit before next test
 	  
-	  data_in=512'b0;
+	  for(integer i=0;i<64;i=i+1) begin
+	    data_in[8*i +: 8] = 8'h41;
+    end
  	  @(negedge tb_clk);
  	  n_rst_in=1;
 	  enable_in=1;
@@ -84,6 +86,7 @@ module tb_sha256();
 	  #(CLK_PERIOD*66);
  	  enable_in=1;
 	  hash_in=hash_out;
+	  data_in=512'b0;
 	  data_in[511]=1;
 	  data_in[63:0]=64'd512;
 	  $info("hash_2block_first: %h",hash_out);

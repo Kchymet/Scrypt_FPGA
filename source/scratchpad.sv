@@ -13,7 +13,7 @@ module scratchpad (
   input wire[1023:0] w_data,
   output wire[1023:0] r_data
 );
-  on_chip_sram_wrapper #(
+on_chip_sram_wrapper #(
     .W_ADDR_SIZE_BITS(17),
     .W_WORD_SIZE_BYTES(1),
     .W_DATA_SIZE_WORDS(128)
@@ -23,17 +23,7 @@ module scratchpad (
     .write_enable(w_enable),
     .address(addr),
     .write_data(w_data),
-    .read_data(r_data),
-    
-    //unneeded TB signals
-  		.init_file_number(0),
-    .dump_file_number(0),
-    .mem_clr(1'b0),
-    .mem_init(1'b0),
-    .mem_dump(1'b0),
-    .start_address(0),
-    .last_address(0),
-    .verbose(1'b0)
+    .read_data(r_data)
     );
     
 endmodule
