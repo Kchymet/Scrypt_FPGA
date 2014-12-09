@@ -41,6 +41,7 @@ module tb_sha256();
 	  enable_in=0;
 	  #(CLK_PERIOD*66);
 	  @(negedge tb_clk);
+	  $info("expected: e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855");
 	  $info("hash_blank_string: %h",hash_out);
 	  
 	  #(CLK_PERIOD*5); //wait a bit before next test
@@ -56,6 +57,7 @@ module tb_sha256();
 	  enable_in=0;
 	  #(CLK_PERIOD*66);
 	  @(negedge tb_clk);
+	  $info("expected: b5d4045c3f466fa91fe2cc6abe79232a1a57cdf104f7a26e716e0a1e2789df78");
 	  $info("hash_ABC: %h",hash_out);
 	  
  	  #(CLK_PERIOD*5); //wait a bit before next test
@@ -71,6 +73,7 @@ module tb_sha256();
 	  enable_in=0;
 	  #(CLK_PERIOD*66);
 	  @(negedge tb_clk);
+	  $info("expected: ba7816bf8f01cfea414140de5dae2223b00361a396177a9cb410ff61f20015ad");
 	  $info("hash_abc: %h",hash_out);
 	  
  	  #(CLK_PERIOD*5); //wait a bit before next test
@@ -96,6 +99,7 @@ module tb_sha256();
 	  hash_in = { 32'h6a09e667,32'hbb67ae85,32'h3c6ef372,32'ha54ff53a,32'h510e527f,32'h9b05688c,32'h1f83d9ab,32'h5be0cd19 };
  	  #(CLK_PERIOD*65);
 	  @(negedge tb_clk);
+	  $info("expected: d53eda7a637c99cc7fb566d96e9fa109bf15c478410a3f5eb4d4c4e26cd081f6");
 	  $info("hash_2block_second: %h",hash_out);
   end
   

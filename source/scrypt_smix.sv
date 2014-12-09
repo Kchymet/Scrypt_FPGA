@@ -19,7 +19,7 @@ module scrypt_smix (
   output reg scratch_write,
   output reg[16:0] scratch_addr,
   output reg[1023:0] scratch_in,
-  input reg[1023:0] scratch_out
+  input wire[1023:0] scratch_out
   );
   
   typedef enum bit[2:0]{
@@ -51,6 +51,8 @@ module scrypt_smix (
     scratch_addr=0;
     scratch_read=0;
     scratch_write=0;
+    bmix_data=0;
+    scratch_in=0;    
     case(q)
       IDLE: begin nextX=data; bmix_enable=0; nextcount=0; if(enable) nextq=FIRST; end
       FIRST: begin

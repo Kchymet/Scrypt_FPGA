@@ -40,9 +40,9 @@ module sha256(
   reg [6:0] round;
   reg [6:0] next_round;
   
-  reg[31:0] w[63:0];
+  reg[31:0] w[15:0];
   reg[31:0] w_t, next_w_t;
-  reg[31:0] next_w[63:0];
+  reg[31:0] next_w[15:0];
   reg[31:0] w2_i,w7_i,w15_i,w16_i; //extension block variables
   wire[31:0] k_i, w_i; //main block variables
   reg[31:0] a,b,c,d,e,f,g,h; //main block variables
@@ -52,7 +52,7 @@ module sha256(
   reg [255:0] next_hash;
   
   assign k_i = SHA256_K[(63-round)*32 +: 32];
-  assign w_i = w[round];
+  assign w_i = w[round%16];
   
   //partial next state logic for w
   sha256_extension EXT(.w2(w2_i),.w7(w7_i),.w15(w15_i),.w16(w16_i),.w(next_w_t));
@@ -80,18 +80,15 @@ module sha256(
     next_w=w;
     case(sha_state)
       IDLE:
-        for(integer i=0; i<64; i=i+1) begin
+        for(integer i=0; i<16; i=i+1) begin
           next_w[i]=0;
         end
       INIT: begin
         for(integer i=0; i<16; i=i+1) begin
           next_w[15-i]=data[i*32 +: 32];
         end
-        for(integer i=16; i<64; i=i+1) begin
-          next_w[i]=0;
-        end
       end
-      EXT_COMPRESS: begin next_w[round+1]=next_w_t; end
+      EXT_COMPRESS: begin next_w[(round+1)%16]=next_w_t; end
     endcase
   end
   
@@ -152,10 +149,10 @@ module sha256(
   
   //extension block inputs
   always_comb begin
-    w15_i = w[round-15+1];
-    w2_i = w[round-2+1];
-    w7_i = w[round-7+1];
-    w16_i = w[round-16+1];
+    w15_i = w[(round-15+1)%16];
+    w2_i = w[(round-2+1)%16];
+    w7_i = w[(round-7+1)%16];
+    w16_i = w[(round-16+1)%16];
   end
   
   //flip-flops
@@ -172,7 +169,7 @@ module sha256(
       hash<=next_hash;
       a<=next_a; b<=next_b; c<=next_c; d<=next_d; e<=next_e; f<=next_f; g<=next_g; h<=next_h;
       round<=next_round;
-      for(integer i=0;i<64;i=i+1) begin
+      for(integer i=0;i<16;i=i+1) begin
         w[i]<=next_w[i];
       end
     end

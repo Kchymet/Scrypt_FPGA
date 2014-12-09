@@ -15,15 +15,13 @@ include /home/ecegrid/a/ece337/Course_Prod/course_make_vars
 # (do not include the source folder in the name)
 # NOTE: YOU WILL NEED TO SET THIS VARIABLE'S VALUE WHEN WORKING WITH HEIRARCHICAL DESIGNS
 # AND THE AUTOMATED GRADING SYSTEM
-#COMPONENT_FILES	:= sha256.sv sha256_extension.sv sha256_main.sv hmac_sha256_32_132.sv hmac_sha256_keyhash.sv hmac_sha256_212.sv
-COMPONENT_FILES	:=
-#sha256.sv sha256_extension.sv sha256_main.sv hmac_sha256_212.sv hmac_sha256_32_84.sv hmac_sha256_32_132.sv hmac_sha256_164.sv hmac_sha256_keyhash.sv pbkdf2_80_80_128.sv pbkdf2_80_128_32.sv salsa20_8.sv scratchpad.sv scrypt_blockmix.sv scrypt_smix.sv
+#COMPONENT_FILES	:= salsa20_8.sv scrypt_blockmix.sv
+COMPONENT_FILES	:= sha256.sv sha256_extension.sv sha256_main.sv hmac_sha256_212.sv hmac_sha256_32_84.sv hmac_sha256_32_132.sv hmac_sha256_164.sv hmac_sha256_keyhash.sv pbkdf2_80_80_128.sv pbkdf2_80_128_32.sv salsa20_8.sv scratchpad.sv scrypt_blockmix.sv scrypt_smix.sv
 
 # Specify the name of the top level file (do not include the source folder in the name)
 # NOTE: YOU WILL NEED TO SET THIS VARIABLE'S VALUE WHEN WORKING WITH HEIRARCHICAL DESIGNS
 # AND THE AUTOMATED GRADING SYSTEM
-TOP_LEVEL_FILE	:=
-#scrypt_top.sv
+TOP_LEVEL_FILE	:= scrypt_top.sv
 
 # Specify the filepath of the test bench you want to use (ie. tb_top_level.sv)
 # (do not include the source folder in the name)
@@ -333,7 +331,7 @@ MOD_NAME := $(basename $(MAIN_FILE))
 mapped/$(TOP_MODULE).v: SHELL := /usr/local/bin/tcsh
 mapped/$(TOP_MODULE).v: source/$(TOP_LEVEL_FILE) $(addprefix source/,$(COMPONENT_FILES))
 	@echo "Synthesizing design: $@\n"
-	@$(MAKE) --no-print-directory syn_mapped MAIN_FILE='$(TOP_LEVEL_FILE)' DEP_SUB_FILES='$(COMPONENT_FILES)' CLOCK_NAME='clk' CLOCK_PERIOD='10' > $(TOP_MODULE).log
+	@$(MAKE) --no-print-directory syn_mapped MAIN_FILE='$(TOP_LEVEL_FILE)' DEP_SUB_FILES='$(COMPONENT_FILES)' CLOCK_NAME='clk' CLOCK_PERIOD='8' > $(TOP_MODULE).log
 	@echo "Synthesis run attempt for $@ complete"
 	@echo "Checking synthesis attempt for errors"
 	@syschk -w $(TOP_MODULE)

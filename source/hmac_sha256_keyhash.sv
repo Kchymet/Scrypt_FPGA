@@ -59,6 +59,7 @@ module hmac_sha256_keyhash (
   always_comb begin
     sha_data=0;
     sha_enable=1;
+    current_hash=0;
     case(q)
       IDLE: sha_enable=0;
       FIRST: begin
