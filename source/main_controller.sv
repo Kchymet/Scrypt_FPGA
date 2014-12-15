@@ -12,7 +12,6 @@ module main_controller (
   input wire rx_notify,
   input wire [7:0] rx_command,
   input wire hash_done,
-  input wire match_found,
   output reg nonce_ready,
   output reg [6:0] address,
   output reg load,
@@ -90,7 +89,7 @@ always_comb begin : HASH_NEXT_STATE
   case(hashState)
     HASH_IDLE: begin if(hash_flag == 1'b1) begin hashNextState = TRIGGER_HASH; end else begin hashNextState = HASH_IDLE; end end
     TRIGGER_HASH: begin hashNextState = HASHING; end
-    HASHING: begin if((hash_done == 1'b1) && (match_found == 1'b1)) begin hashNextState = SEND_NONCE; end else if(hash_done == 1'b1) begin hashNextState = HASH_IDLE; end else begin hashNextState = HASHING; end end
+    HASHING: begin if((hash_done == 1'b1)) begin hashNextState = SEND_NONCE; end else begin hashNextState = HASHING; end end
     SEND_NONCE: begin hashNextState = HASH_IDLE; end
   endcase 
 end

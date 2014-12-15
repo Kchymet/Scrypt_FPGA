@@ -12,7 +12,7 @@ module i2c_transceiver (
   input wire scl_in,
   input wire sda_in,
   input wire nonce_ready,
-  input wire [0:31] nonce,
+  input wire [0:255] nonce, //port name the same, but now actually contains hash
   output reg sda_out,
   output reg notify,
   output reg [0:7] command,

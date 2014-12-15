@@ -29,9 +29,9 @@ reg [6:0] address;
 reg load;
 reg [31:0] nonce;
 reg hash_done;
-reg match_found;
 reg start_hash;
 reg [639:0] hash_data;
+reg [255:0] scrypt_hash;
 
 
 i2c_transceiver I2C
@@ -67,7 +67,6 @@ main_controller MAIN_CONTROLLER
   .nonce_ready(nonce_ready),
   .load(load),
   .hash_done(hash_done),
-  .match_found(match_found),
   .start_hash(start_hash)
 );
 
@@ -79,7 +78,7 @@ scrypt_top SCRYPT_TOP
   .enable(start_hash),
   .data(hash_data),
   .nonce(nonce),
-  .match_found(match_found),
+  .hash(scrypt_hash),
   .hash_done(hash_done),
   .scratch_read(scratch_read),
   .scratch_write(scratch_write),
