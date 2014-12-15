@@ -12,7 +12,7 @@ module scrypt_top (
   input wire[639:0] data,
   input wire enable,
   output reg[31:0] nonce,
-  output reg match_found,
+  output reg[255:0] hash,
   output reg hash_done,
   
   //SRAM connections, not in real design, but can't fabricate SRAM
@@ -34,7 +34,7 @@ module scrypt_top (
   end
   
   //internal variables  
-  wire[255:0] pbsecond_out;
+  //wire[255:0] pbsecond_out;
   wire[1023:0] pbfirst_out, main_out;
   reg[1023:0] main_in, pbsecond_in;
   wire pbfirst_done, main_done, pbsecond_done;
@@ -43,9 +43,9 @@ module scrypt_top (
   scrypt_smix SCRYPT_MAIN (.clk(clk),.n_rst(n_rst),.data(main_in),.enable(pbfirst_done),.hash(main_out),.hash_done(main_done),
     //SRAM connections
     .scratch_read(scratch_read),.scratch_write(scratch_write),.scratch_addr(scratch_addr),.scratch_in(scratch_in),.scratch_out(scratch_out));
-  pbkdf2_80_128_32 PBSECOND (.clk(clk),.n_rst(n_rst),.pass(data_copy),.salt(pbsecond_in),.enable(main_done),.hash(pbsecond_out),.hash_done(pbsecond_done));
+  pbkdf2_80_128_32 PBSECOND (.clk(clk),.n_rst(n_rst),.pass(data_copy),.salt(pbsecond_in),.enable(main_done),.hash(hash),.hash_done(pbsecond_done));
 
-  assign match_found = hash_done & (pbsecond_out < data_copy[63:32]); //todo treat data as little-endian?
+  //assign match_found = hash_done & (pbsecond_out < data_copy[63:32]); //todo treat data as little-endian?
   assign hash_done = pbsecond_done;
 
   always_comb begin //convert endianness for smix

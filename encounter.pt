@@ -1,0 +1,40 @@
+#***************************************************
+# Timing constraint file in PT format
+#
+# - Note: This is all case-sensitive
+#***************************************************
+
+#***************************************************
+# Clock Constraints	
+#***************************************************
+create_clock  -period 12.000000000 -waveform { 0.0000000 6.0000000}\
+   [get_ports {clk}]
+
+
+#***************************************************
+# Input Pin Constraints
+#***************************************************	 
+set_input_delay -clock clk 1.0000 \
+   [get_ports {n_rst}] 
+set_input_delay -clock clk 1.0000 \
+   [get_ports {sda_in}]
+set_input_delay -clock clk 1.0000 \
+   [get_ports {scl}]
+
+#***************************************************
+# Output Pin Constraints
+#***************************************************
+set_output_delay -clock clk 1.0000 \
+   [get_ports {sda_out}]
+
+#***************************************************
+# Pin Driving Cells (Needed only for Inputs)
+#***************************************************
+set_driving_cell -lib_cell INVX8\
+   [get_ports {clk}] 
+set_driving_cell -lib_cell INVX8\
+   [get_ports {n_rst}]
+ set_driving_cell -lib_cell INVX8\
+   [get_ports {sda_in}]
+set_driving_cell -lib_cell INVX8\
+   [get_ports {scl}]
