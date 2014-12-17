@@ -67,7 +67,7 @@ module tb_scrypt_top ();
 	  #(CLK_PERIOD*200000);
 	  
     data_in =    
-    {//dogecoin block #
+    {//dogecoin block #499219
       32'h02016200,//
       256'h241105e57493b4d0eebf072c5210728342e6b083a2f97f81464bd779b0a95a51,//
       256'h13d21756b72457c81da1356e9f34b3a58b5db2fd2d507e5ace9212020503e7f6,//

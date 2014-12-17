@@ -15,12 +15,14 @@ include /home/ecegrid/a/ece337/Course_Prod/course_make_vars
 # (do not include the source folder in the name)
 # NOTE: YOU WILL NEED TO SET THIS VARIABLE'S VALUE WHEN WORKING WITH HEIRARCHICAL DESIGNS
 # AND THE AUTOMATED GRADING SYSTEM
-COMPONENT_FILES	:= sha256.sv sha256_extension.sv sha256_main.sv hmac_sha256_212.sv hmac_sha256_32_84.sv hmac_sha256_32_132.sv hmac_sha256_164.sv hmac_sha256_keyhash.sv pbkdf2_80_80_128.sv pbkdf2_80_128_32.sv salsa20_8.sv scratchpad.sv scrypt_blockmix.sv scrypt_smix.sv controller.sv decode.sv flex_counter.sv flex_pts_sr.sv flex_stp_sr.sv flipflops_80B.sv i2c_transceiver.sv main_controller.sv next_nonce_byte.sv rx_reg.sv scl_edge.sv sda_sel.sv timer.sv tx_sr.sv rx_sr.sv
+COMPONENT_FILES	:= sha256.sv sha256_extension.sv sha256_main.sv hmac_sha256_212.sv hmac_sha256_32_84.sv hmac_sha256_32_132.sv hmac_sha256_164.sv hmac_sha256_keyhash.sv pbkdf2_80_80_128.sv pbkdf2_80_128_32.sv salsa20_8.sv scratchpad.sv scrypt_blockmix.sv scrypt_smix.sv
+#sha256.sv sha256_extension.sv sha256_main.sv hmac_sha256_212.sv hmac_sha256_32_84.sv hmac_sha256_32_132.sv hmac_sha256_164.sv hmac_sha256_keyhash.sv pbkdf2_80_80_128.sv pbkdf2_80_128_32.sv salsa20_8.sv scratchpad.sv scrypt_blockmix.sv scrypt_smix.sv controller.sv decode.sv flex_counter.sv flex_pts_sr.sv flex_stp_sr.sv flipflops_80B.sv i2c_transceiver.sv main_controller.sv next_nonce_byte.sv rx_reg.sv scl_edge.sv sda_sel.sv timer.sv tx_sr.sv rx_sr.sv scrypt_top.sv
 
 # Specify the name of the top level file (do not include the source folder in the name)
 # NOTE: YOU WILL NEED TO SET THIS VARIABLE'S VALUE WHEN WORKING WITH HEIRARCHICAL DESIGNS
 # AND THE AUTOMATED GRADING SYSTEM
-TOP_LEVEL_FILE	:= scrypt_top.sv#scrypt_hasher.sv
+TOP_LEVEL_FILE	:= scrypt_top.sv
+#scrypt_hasher.sv
 
 # Specify the filepath of the test bench you want to use (ie. tb_top_level.sv)
 # (do not include the source folder in the name)
